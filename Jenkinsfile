@@ -33,7 +33,7 @@ pipeline {
             steps {
                 container('kubectl') {
                     script {
-                        sh 'kubectl apply -f manifest.yaml'
+                        sh 'kubectl apply -f todo.yaml'
                     }
                 }
             }
