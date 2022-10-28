@@ -6,15 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Deploy') {
-            steps {
-                container('kubectl') {
-                    script {
-                        sh 'kubectl apply -f manifest.yaml'
-                    }
-                }
-            }
-        }
+
         stage('Build') {
             steps {
                 container('podman') {
@@ -33,6 +25,15 @@ pipeline {
                 container('fortune') {
                     script {
                         sh 'fortune'
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                container('kubectl') {
+                    script {
+                        sh 'kubectl apply -f manifest.yaml'
                     }
                 }
             }
