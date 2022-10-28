@@ -94,7 +94,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: containergo-ingress
-  namespace: berton
+  namespace: maxi
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
