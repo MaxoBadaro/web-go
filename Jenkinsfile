@@ -1,7 +1,7 @@
 pipeline {
     agent { label 'tuto' }
     
-    enviroment {
+    environment {
         DOCKERHUB_CREDS = credentials('maxikey')
     }
 
