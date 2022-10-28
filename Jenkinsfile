@@ -34,6 +34,8 @@ pipeline {
                 container('kubectl') {
                     script {
                         sh 'kubectl apply -f todo.yaml'
+                        sh 'kubectl rollout restart deployment -n maxi web-go'
+                        sh 'kubectl rollout status deployment -n maxi web-go'
                     }
                 }
             }
