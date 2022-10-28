@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: berton
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: containergo-conf
+  namespace: berton
+data:
+  FOO: "hola "
+  BAR: "mundo"
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: containergo-secrets
+  namespace: berton
+type: Opaque
+data:
+  SUPERSECRETUSER: ZWxvbg==
+  SUPERSECRETPASS: bXVzaw==
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: containergo
+  namespace: berton
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: containergo
+  template:
+    metadata:
+      labels:
+        app: containergo
+    spec:
+      containers:
+      - name: containergo
+        image: docker.io/bertontheone/container_go
+        ports:
+        - containerPort: 8080
+        env:
+          - name: SUPERSECRETUSER
+            valueFrom:
+              secretKeyRef:
+                name: containergo-secrets
+                key: SUPERSECRETUSER
+          - name: SUPERSECRETPASS
+            valueFrom:
+              secretKeyRef:
+                name: containergo-secrets
+                key: SUPERSECRETPASS
+          - name: FOO
+            valueFrom:
+              configMapKeyRef:
+                name: containergo-conf
+                key: FOO
+          - name: BAR
+            valueFrom:
+              configMapKeyRef:
+                name: containergo-conf
+                key: BAR
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: containergo-service
+  namespace: berton
+spec:
+  type: ClusterIP
+  selector:
+    app: containergo
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+---
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: containergo-ingress
+  namespace: berton
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - path: /go
+        pathType: Prefix
+        backend:
+          service:
+            name: containergo-service
+            port:
+              number: 8080
