@@ -31,7 +31,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: containergo
+  name: web-go
   namespace: maxi
 spec:
   replicas: 2
