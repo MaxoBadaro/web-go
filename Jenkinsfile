@@ -6,7 +6,23 @@ pipeline {
     }
 
     stages {
-
+        
+        stage('Build') {
+          when {
+            allOf {
+                branch 'PR-*'
+                environment name: 'CHANGE_TARGET', value: 'main'
+                }
+            }
+            steps {
+                container('podman') {
+                    script {
+                        sh 'podman build -t docker.io/nelsonyaccuzzi/web-go:$BUILD_NUMBER -f Dockerfile'
+                    }
+                }
+            }
+        }
+        
         stage('Build') {
             when {
                 branch 'develop'
