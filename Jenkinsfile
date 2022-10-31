@@ -7,7 +7,7 @@ pipeline {
 
     stages {
         
-        stage('Build') {
+        stage('BuildPR') {
           when {
             allOf {
                 branch 'PR-*'
