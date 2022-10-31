@@ -7,23 +7,7 @@ pipeline {
 
     stages {
         
-        stage('BuildPR') {
-          when {
-            allOf {
-                branch 'PR-*'
-                environment name: 'CHANGE_TARGET', value: 'main'
-                }
-            }
-            steps {
-                container('podman') {
-                    script {
-                        sh 'podman build -t docker.io/maxibadaro/web-go:$BUILD_NUMBER -f Dockerfile'
-                    }
-                }
-            }
-        }
-        
-        stage('Build') {
+        stage('Build-develop') {
             when {
                 branch 'develop'
             }
@@ -31,24 +15,44 @@ pipeline {
                 container('podman') {
                     script {
                         sh 'podman build -t docker.io/maxibadaro/web-go:$BUILD_NUMBER -f Dockerfile'
+                        sh 'podman tag docker.io/maxibadaro/web-go:$BUILD_NUMBER docker.io/maxibadaro/web-go:dev'
                         sh 'podman login docker.io -u $DOCKERHUB_CREDS_USR -p $DOCKERHUB_CREDS_PSW'
                         sh 'podman push docker.io/maxibadaro/web-go:$BUILD_NUMBER'
-                    }
-                }
-                container('kubectl') {
-                    script {
-                        sh 'env'
-                        sh 'kubectl get pods'
-                    }
-                }
-                container('fortune') {
-                    script {
-                        sh 'fortune'
+                        sh 'podman push docker.io/maxibadaro/web-go:dev'
                     }
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy-develop') {
+            when {
+                branch 'develop'
+            }
+            steps {
+                container('kubectl') {
+                    script {
+                        sh 'kubectl apply -f dev.yaml'
+                        sh 'kubectl rollout restart deployment -n dev web-go'
+                        sh 'kubectl rollout status deployment -n dev web-go'
+                    }
+                }
+            }
+        }
+                stage('Build-main') {
+            when {
+                branch 'main'
+            }
+            steps {
+                container('podman') {
+                    script {
+                        sh 'podman login docker.io -u $DOCKERHUB_CREDS_USR -p $DOCKERHUB_CREDS_PSW'
+                        sh 'podman pull docker.io/maxibadaro/web-go:dev'
+                        sh 'podman tag docker.io/maxibadaro/web-go:dev docker.io/maxibadaro/web-go:latest'
+                        sh 'podman push docker.io/maxibadaro/web-go:latest'
+                    }
+                }
+            }
+        }
+        stage('Deploy-main') {
             when {
                 branch 'main'
             }
