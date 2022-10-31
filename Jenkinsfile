@@ -17,7 +17,7 @@ pipeline {
             steps {
                 container('podman') {
                     script {
-                        sh 'podman build -t docker.io/nelsonyaccuzzi/web-go:$BUILD_NUMBER -f Dockerfile'
+                        sh 'podman build -t docker.io/maxibadaro/web-go:$BUILD_NUMBER -f Dockerfile'
                     }
                 }
             }
