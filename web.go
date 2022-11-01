@@ -12,7 +12,7 @@ func main() {
 }
 
 func HelloServer(w http.ResponseWriter, r *http.Request) {
-	 fmt.Fprintf(w, "Devops 20 aguante Boke \n")
+	 fmt.Fprintf(w, "Devops 20202020 aguante Boke \n")
 	 fmt.Fprintf(w, "Host: %s\n", os.Getenv("HOSTNAME"))
 
 	 fmt.Fprintf(w, "\n")
