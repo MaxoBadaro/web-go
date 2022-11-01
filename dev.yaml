@@ -46,6 +46,7 @@ spec:
       containers:
       - name: containergo
         image: docker.io/maxibadaro/web-go:dev
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080
         env:
